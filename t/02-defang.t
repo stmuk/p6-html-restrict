@@ -43,3 +43,16 @@ my $html = q[
 
     ok $got eq $expected or die $got.gist;
 }
+
+{
+    my $html = "<html>\n<head>\n<meta charset=\"utf-8\">\n</head>\n<body>\n<a href=\"http://stevemynott.blogspot.com/feeds/posts/default\">Steve Mynott</a> \nNow is the time for all good men\n</body>\n</html>\n";
+    my $hr = HTML::Restrict.new;
+
+    my $doc = $hr.process(:$html);
+
+    my $got = $doc.gist;
+
+    my $expected ='<?xml version="1.0"?><html> <a href=\"http://stevemynott.blogspot.com/feeds/posts/default\">Steve Mynott</a> </html>';
+
+    ok $got eq $expected or die $got.gist;
+}
