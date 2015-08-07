@@ -29,7 +29,7 @@ class HTML::Restrict {
                 self.walk-nodes($elem.nodes);
             }
 
-            self.clean($elem);
+            self.clean($elem) ; # XXX
         }
     }
 
@@ -53,7 +53,12 @@ class HTML::Restrict {
 
     method clean($elem) {
 
-        $elem.remove unless $elem.name eq any @.good-tags; 
+        unless $elem.name eq any @.good-tags {
+            my $child = $elem.nextSibling();
+
+            $elem.removeChild($child);
+
+        }
 
         if $elem.attribs.values.so {
             for $elem.attribs.kv -> $k, $v {

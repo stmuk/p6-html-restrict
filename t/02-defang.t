@@ -2,7 +2,7 @@ use v6;
 use Test; 
 use HTML::Restrict;
 
-plan 2;
+plan 3;
 
 my $html = q[
         <?php   echo(" EVIL EVIL EVIL "); ?>    <!-- asdf -->
@@ -52,7 +52,7 @@ my $html = q[
 
     my $got = $doc.gist;
 
-    my $expected ='<?xml version="1.0"?><html> <a href=\"http://stevemynott.blogspot.com/feeds/posts/default\">Steve Mynott</a> </html>';
+    my $expected ='<?xml version="1.0"?><html> <head> <meta charset="utf-8"/>  </head>  <body> <a href="http://stevemynott.blogspot.com/feeds/posts/default">Steve Mynott</a>  Now is the time for all good men </body>  </html>';
 
     ok $got eq $expected or die $got.gist;
 }
