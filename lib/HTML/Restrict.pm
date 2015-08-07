@@ -1,8 +1,6 @@
 use v6;
 use HTML::Parser::XML;
 
-constant DEBUG = %*ENV<DEBUG>;
-
 class HTML::Restrict {
 
     has @.good-tags =  <a b br em hr i img p strong tt u>;
@@ -18,8 +16,6 @@ class HTML::Restrict {
 
         my $parser = HTML::Parser::XML.new;
         my XML::Document $doc = $parser.parse($html);
-
-        DEBUG and warn $doc.gist;
 
         self.walk($doc);
 
@@ -57,15 +53,11 @@ class HTML::Restrict {
 
     method clean($elem) {
 
-        DEBUG and say 'name: ' ~ $elem.name.gist;
-        DEBUG and say ' attribs: ' ~ $elem.attribs.gist;
-
         $elem.remove unless $elem.name eq any @.good-tags; 
 
         if $elem.attribs.values.so {
             for $elem.attribs.kv -> $k, $v {
                 if $k.lc ~~ any @.bad-attrib-vals or $v.lc ~~ any @.bad-attrib-vals {
-                    DEBUG and say "nuking:" ~ $k;
                     $elem.unset($k);
                 }
 
