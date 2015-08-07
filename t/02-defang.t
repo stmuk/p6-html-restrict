@@ -33,7 +33,7 @@ my $html = q[
 }
 
 {
-    my $hr = HTML::Restrict.new(:good-tags(<a b br em hr i img p strong tt u>), :bad-attrib-vals(any(rx/onmouseover/, rx/javascript/)));
+    my $hr = HTML::Restrict.new(:good-tags(<a b br em hr i img p strong tt u>), :bad-attrib-vals(any(rx/onmouseover/, rx/javascript/)), :recurse-depth(100));
 
     my $doc = $hr.process(:$html);
 
