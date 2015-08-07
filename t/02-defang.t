@@ -2,7 +2,7 @@ use v6;
 use Test; 
 use HTML::Restrict;
 
-plan 1;
+plan 2;
 
 my $html = q[
         <?php   echo(" EVIL EVIL EVIL "); ?>    <!-- asdf -->
@@ -20,12 +20,26 @@ my $html = q[
         </A> <br>
 ];
 
-my $hr = HTML::Restrict.new(:$html);
+{
+    my $hr = HTML::Restrict.new;
 
-my $doc = $hr.restrict;
+    my $doc = $hr.process(:$html);
 
-my $got = $doc.gist;
+    my $got = $doc.gist;
 
-my $expected = "<?xml version=\"1.0\"?><html><!--asdf -->  <a>HREF=JAVA \&lt;!\&gt;</a>  <hr/>  <i FAKE=\"attribute\"> IN ITALICS WITH FAKE=\"attribute\" </i> <br/>  <b> IN BOLD </b> <br/>  <a>HREF=JAVA \&lt;!\&gt;</a>  <a NAME=\"evil\"> <a>HREF=JAVA \&lt;!\&gt;</a>  <br/>  <a HREF=\"image/bigone.jpg\"> <img SRC=\"image/smallone.jpg\"/>  </a>  </a>  <br/></html>";
+    my $expected = "<?xml version=\"1.0\"?><html><!--asdf -->  <a>HREF=JAVA \&lt;!\&gt;</a>  <hr/>  <i FAKE=\"attribute\"> IN ITALICS WITH FAKE=\"attribute\" </i> <br/>  <b> IN BOLD </b> <br/>  <a>HREF=JAVA \&lt;!\&gt;</a>  <a NAME=\"evil\"> <a>HREF=JAVA \&lt;!\&gt;</a>  <br/>  <a HREF=\"image/bigone.jpg\"> <img SRC=\"image/smallone.jpg\"/>  </a>  </a>  <br/></html>";
 
-ok $got eq $expected or die $got.gist;
+    ok $got eq $expected or die $got.gist;
+}
+
+{
+    my $hr = HTML::Restrict.new(:good-tags(<a b br em hr i img p strong tt u>), :bad-attrib-vals(any(rx/onmouseover/, rx/javascript/)));
+
+    my $doc = $hr.process(:$html);
+
+    my $got = $doc.gist;
+
+    my $expected = "<?xml version=\"1.0\"?><html><!--asdf -->  <a>HREF=JAVA \&lt;!\&gt;</a>  <hr/>  <i FAKE=\"attribute\"> IN ITALICS WITH FAKE=\"attribute\" </i> <br/>  <b> IN BOLD </b> <br/>  <a>HREF=JAVA \&lt;!\&gt;</a>  <a NAME=\"evil\"> <a>HREF=JAVA \&lt;!\&gt;</a>  <br/>  <a HREF=\"image/bigone.jpg\"> <img SRC=\"image/smallone.jpg\"/>  </a>  </a>  <br/></html>";
+
+    ok $got eq $expected or die $got.gist;
+}

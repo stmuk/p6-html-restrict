@@ -1,21 +1,18 @@
 use v6;
 use HTML::Parser::XML;
 
+constant DEBUG = %*ENV<DEBUG>;
+
 class HTML::Restrict {
 
-    has $.html;
-    our $i;
+    has @.good-tags =  <a b br em hr i img p strong tt u>;
+    has @.bad-attrib-vals = any(rx/onmouseover/, rx/javascript/);
+    has $.recurse-depth = 100;
 
-    constant DEBUG = %*ENV<DEBUG>;
-    
-    # list of permitted tags
-    my @TAGS-OK = <a b br em hr i img p strong tt u>;
+    my $recurse-count = 0;
 
-    # list of forbidden attributes and values
-    my @BAD-THINGS = any(rx/onmouseover/, rx/javascript/);
+    method process(:$html is copy) {
 
-    method restrict {
-        my $html = $.html;
         # strip out PHP
         $html ~~ s:g/'<?php' .*? '?>'//;
 
@@ -24,50 +21,50 @@ class HTML::Restrict {
 
         DEBUG and warn $doc.gist;
 
-        walk($doc);
+        self.walk($doc);
 
         return $doc
     }
 
-    sub walk($doc) {
+    method walk($doc) {
         for $doc.elements -> $elem {
 
             if $elem.nodes {
-                walk-nodes($elem.nodes);
+                self.walk-nodes($elem.nodes);
             }
 
-            clean($elem);
+            self.clean($elem);
         }
     }
 
-    sub walk-nodes(@nodes) {
+    method walk-nodes(@nodes) {
 
         # this is recusive and needs a limit XXX
-        $i++;
-        die if $i == 100;
+        $recurse-count++;
+        die "recurse count reached" if $recurse-count == $.recurse-depth;
 
         for @nodes -> $elem {
             next if $elem.can('text'); # work around .WHAT issue XXX
-            clean($elem) ;
+            self.clean($elem) ;
 
             if $elem.nodes {
-                walk-nodes($elem.nodes);
+                self.walk-nodes($elem.nodes);
             }
 
         }
 
     }
 
-    sub clean($elem) {
+    method clean($elem) {
 
         DEBUG and say 'name: ' ~ $elem.name.gist;
         DEBUG and say ' attribs: ' ~ $elem.attribs.gist;
 
-        $elem.remove unless $elem.name eq any @TAGS-OK; 
+        $elem.remove unless $elem.name eq any @.good-tags; 
 
         if $elem.attribs.values.so {
             for $elem.attribs.kv -> $k, $v {
-                if $k.lc ~~ any @BAD-THINGS or $v.lc ~~ any @BAD-THINGS {
+                if $k.lc ~~ any @.bad-attrib-vals or $v.lc ~~ any @.bad-attrib-vals {
                     DEBUG and say "nuking:" ~ $k;
                     $elem.unset($k);
                 }

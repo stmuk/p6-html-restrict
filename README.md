@@ -13,6 +13,19 @@ CAUTION THIS MAY NOT BE SECURE FOR PRODUCTION USE YET.
 
 Pull requests welcome.
 
+SYNOPSIS
+========
+
+    use HTML::Restrict;
+
+    my $hr = HTML::Restrict.new(:good-tags(<a b br em hr i img p strong tt u>), :bad-attrib-vals(any(rx/onmouseover/, rx/javascript/)));
+
+    my $doc = $hr.process(:$html);
+
+    my $got = $doc.gist;
+
+Defaults for @.good-tags and @.bad-attrib-vals are as above so may be omitted.
+
 -- steve.mynott@gmail.com 20150806
 
 # p6-html-restrict
