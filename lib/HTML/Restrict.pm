@@ -19,6 +19,8 @@ class HTML::Restrict {
 
         self.walk($doc);
 
+        $recurse-count = 0;
+
         return $doc
     }
 
@@ -37,13 +39,13 @@ class HTML::Restrict {
 
         # this is recusive and needs a limit XXX
         $recurse-count++;
-        die "recurse count reached" if $recurse-count == $.recurse-depth;
+        #die "recurse count reached" if $recurse-count == $.recurse-depth;
 
         for @nodes -> $elem {
             next if $elem.can('text'); # work around .WHAT issue XXX
             self.clean($elem) ;
 
-            if $elem.nodes {
+            if $elem.can('nodes') and  $elem.nodes {
                 self.walk-nodes($elem.nodes);
             }
 
@@ -53,14 +55,16 @@ class HTML::Restrict {
 
     method clean($elem) {
 
-        unless $elem.name eq any @.good-tags {
-            my $child = $elem.nextSibling();
+        if $elem.can('name') {
+            unless $elem.name eq any @.good-tags {
+                my $child = $elem.nextSibling();
 
-            $elem.removeChild($child);
+                $elem.removeChild($child) if $child.so;
 
+            }
         }
 
-        if $elem.attribs.values.so {
+        if $elem.can('attribs') and $elem.attribs.values.so {
             for $elem.attribs.kv -> $k, $v {
                 if $k.lc ~~ any @.bad-attrib-vals or $v.lc ~~ any @.bad-attrib-vals {
                     $elem.unset($k);
