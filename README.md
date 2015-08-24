@@ -1,7 +1,7 @@
 HTML::Restrict
 ==============
 
-WORK IN PROGRESS - CURRENTLY BROKEN
+WORK IN PROGRESS
 
 Delete specified HTML tags, attributes and attribute values from HTML in an
 attempt to sanitise HTML for safer use.
