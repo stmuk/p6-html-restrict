@@ -1,4 +1,5 @@
 {
+    "perl"        : "6.c",
     "name"        : "HTML::Restrict",
     "version"     : "0.1",
     "description" : "Delete specified HTML tags and attributes",
