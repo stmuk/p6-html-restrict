@@ -41,6 +41,7 @@ may be omitted.
 Pull requests welcome.
 
 =head1 AUTHOR
+
 Steve Mynott <steve.mynott@gmail.com> 20150806
 
 =end pod
