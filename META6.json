@@ -7,7 +7,7 @@
     "authors"      : ["Steve Mynott <steve.mynott@gmail.com>"],
     "depends"     : ["HTML::Parser::XML"],
     "provides"    : {
-            "HTML::Restrict": "lib/HTML/Restrict.pm"
+            "HTML::Restrict": "lib/HTML/Restrict.pm6"
     },
-    "source-url"  : "git://github.com/stmuk/p6-html-restrict.git"
+    "source-url"  : "https://github.com/stmuk/p6-html-restrict.git"
 }
